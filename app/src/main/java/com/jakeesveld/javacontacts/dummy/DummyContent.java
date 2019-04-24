@@ -1,4 +1,4 @@
-package com.lambdaschool.javacontacts.dummy;
+package com.jakeesveld.javacontacts.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;

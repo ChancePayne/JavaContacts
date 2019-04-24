@@ -1,4 +1,4 @@
-package com.lambdaschool.javacontacts;
+package com.jakeesveld.javacontacts;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.lambdaschool.javacontacts", appContext.getPackageName());
+        assertEquals("com.jakeesveld.javacontacts", appContext.getPackageName());
     }
 }

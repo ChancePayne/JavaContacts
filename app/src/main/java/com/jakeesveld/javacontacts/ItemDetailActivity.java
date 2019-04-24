@@ -1,4 +1,4 @@
-package com.lambdaschool.javacontacts;
+package com.jakeesveld.javacontacts;
 
 import android.content.Intent;
 import android.os.Bundle;
