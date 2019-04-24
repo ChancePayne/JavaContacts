@@ -1,20 +1,6 @@
 package com.lambdaschool.javacontacts;
 
 public class Contact {
-    //https://randomuser.me/api/?format=json&inc=name,email,phone,picture&results=1000
-
-/* "name": {
-    "title": "mr",
-    "first": "shane",
-    "last": "fitzpatrick"
-},
-"email": "shane.fitzpatrick@example.com",
-"phone": "061-466-1369",
-"picture": {
-    "large": "https://randomuser.me/api/portraits/men/20.jpg",
-    "medium": "https://randomuser.me/api/portraits/med/men/20.jpg",
-    "thumbnail": "https://randomuser.me/api/portraits/thumb/men/20.jpg"*/
-
     private String title, first, last;
     private String email, phone;
     private String imageLarge, imageMedium, imageThumbnail;
