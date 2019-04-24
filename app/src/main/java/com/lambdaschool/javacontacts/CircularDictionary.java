@@ -18,6 +18,23 @@ public class CircularDictionary<E> {
         increasePointer();
     }
 
+    public E get() {
+        E element = data[pointer];
+        increasePointer();
+        return element;
+    }
+
+    public E get(String key) {
+        int index = -1;
+        for(int i = 0; i < keys.length; ++i) {
+            if(key.equals(keys[i])) {
+                index = i;
+                break;
+            }
+        }
+        return index == -1 ? null : data[index];
+    }
+
     private void increasePointer() {
         ++pointer;
         if(pointer >= data.length) {
