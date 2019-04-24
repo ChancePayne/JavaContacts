@@ -1,5 +1,8 @@
 package com.lambdaschool.javacontacts;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -7,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
@@ -17,13 +21,13 @@ import javax.net.ssl.HttpsURLConnection;
 // S03M03-1 build and test firebase database
 // S03M03-2 Add basic network adapter
 public class NetworkAdapter {
-    public static final String GET     = "GET";
-    public static final String POST    = "POST";
-    public static final String HEAD    = "HEAD";
+    public static final String GET = "GET";
+    public static final String POST = "POST";
+    public static final String HEAD = "HEAD";
     public static final String OPTIONS = "OPTIONS";
-    public static final String PUT     = "PUT";
-    public static final String DELETE  = "DELETE";
-    public static final String TRACE   = "TRACE";
+    public static final String PUT = "PUT";
+    public static final String DELETE = "DELETE";
+    public static final String TRACE = "TRACE";
 
     interface NetworkCallback {
         void processResult(String result);
@@ -38,9 +42,9 @@ public class NetworkAdapter {
     }
 
     static String httpRequest(String urlString, String requestMethod, JSONObject requestBody, Map<String, String> headerProperties) {
-        String             result      = "";
-        InputStream        inputStream = null;
-        HttpsURLConnection connection  = null;
+        String result = "";
+        InputStream inputStream = null;
+        HttpsURLConnection connection = null;
 
         try {
             URL url = new URL(urlString);
@@ -58,7 +62,7 @@ public class NetworkAdapter {
             connection.setReadTimeout(3000);
 
             // S03M03-10 add support for different types of request
-            if((requestMethod.equals(POST) || requestMethod.equals(PUT)) && requestBody != null) {
+            if ((requestMethod.equals(POST) || requestMethod.equals(PUT)) && requestBody != null) {
                 // S03M03-11 write body of post request
                 connection.setDoInput(true);
                 final OutputStream outputStream = connection.getOutputStream();
@@ -72,8 +76,8 @@ public class NetworkAdapter {
             if (responseCode == HttpsURLConnection.HTTP_OK) {
                 inputStream = connection.getInputStream();
                 if (inputStream != null) {
-                    BufferedReader reader  = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder  builder = new StringBuilder();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder builder = new StringBuilder();
 
                     String line;
                     do {
@@ -111,6 +115,53 @@ public class NetworkAdapter {
             @Override
             public void run() {
                 callback.processResult(httpRequest(urlString));
+            }
+        }).start();
+    }
+
+    interface NetworkImageCallback {
+        void processImage(Bitmap image);
+    }
+
+    public static void backgroundBitmapFromUrl(final String stringUrl, final NetworkImageCallback callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap result = null;
+                InputStream stream = null;
+                HttpURLConnection connection = null;
+                try {
+                    URL url = new URL(stringUrl);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setReadTimeout(3000);
+                    connection.setConnectTimeout(3000);
+
+                    connection.connect();
+
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        stream = connection.getInputStream();
+                        if (stream != null) {
+                            result = BitmapFactory.decodeStream(stream);
+                        }
+                    }
+                    callback.processImage(result);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+
+                    if (stream != null) {
+                        try {
+                            stream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
         }).start();
     }
