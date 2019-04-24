@@ -1,6 +1,7 @@
 package com.lambdaschool.javacontacts;
 
 public class Contact {
+
     private String title, first, last;
     private String email, phone;
     private String imageLarge, imageMedium, imageThumbnail;

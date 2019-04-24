@@ -2,17 +2,26 @@ package com.lambdaschool.javacontacts;
 
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+// S04M03-1 Add Network Adapter
+// S03M03-1 build and test firebase database
+// S03M03-2 Add basic network adapter
 public class NetworkAdapter {
     public static final String GET     = "GET";
     public static final String POST    = "POST";
@@ -108,6 +117,53 @@ public class NetworkAdapter {
             @Override
             public void run() {
                 callback.processResult(httpRequest(urlString));
+            }
+        }).start();
+    }
+
+    interface NetworkImageCallback {
+        void processImage(Bitmap image);
+    }
+
+    public static void backgroundBitmapFromUrl(final String stringUrl, final NetworkImageCallback callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap            result     = null;
+                InputStream       stream     = null;
+                HttpURLConnection connection = null;
+                try {
+                    URL url = new URL(stringUrl);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setReadTimeout(3000);
+                    connection.setConnectTimeout(3000);
+
+                    connection.connect();
+
+                    if(connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        stream = connection.getInputStream();
+                        if(stream != null) {
+                            result = BitmapFactory.decodeStream(stream);
+                        }
+                    }
+                    callback.processImage(result);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if(connection != null) {
+                        connection.disconnect();
+                    }
+
+                    if(stream != null) {
+                        try {
+                            stream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
         }).start();
     }
