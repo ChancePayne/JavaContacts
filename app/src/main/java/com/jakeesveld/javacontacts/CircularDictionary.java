@@ -1,18 +1,18 @@
 package com.jakeesveld.javacontacts;
 
-public class CircularDictionary<T> {
+public class CircularDictionary<K, T> {
     private T[] data;
-    private String[] keys;
+    private K[] keys;
     private int pointer, length;
 
     public CircularDictionary(int size){
         data = (T[]) new Object[size];
-        keys = new String[size];
+        keys = (K[]) new Object[size];
         length = size;
         pointer = 0;
     }
 
-    public void put(String key, T item){
+    public void put(K key, T item){
         keys[pointer] = key;
         data[pointer] = item;
         increasePointer();
@@ -25,7 +25,7 @@ public class CircularDictionary<T> {
         return element;
     }
 
-    public T get(String key){
+    public T get(K key){
         int index = -1;
         for(int i = 0; i < keys.length; ++i){
             if(key.equals(keys[i])){
