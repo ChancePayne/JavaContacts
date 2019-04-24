@@ -39,6 +39,19 @@ public class ItemListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
 
+        CircularDictionary<Integer> data = new CircularDictionary<>(10);
+
+        for (int i = 0; i < data.getLength() + 5; ++i) {
+            data.put(Integer.toBinaryString(i), i);
+        }
+/*        for (int i=0;i<data.getLength()+5; ++i) {
+            System.out.println(data.get());
+        }*/
+        System.out.println(data.get("1"));
+        System.out.println(data.get("1110"));
+        System.out.println(data.get("111"));
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
