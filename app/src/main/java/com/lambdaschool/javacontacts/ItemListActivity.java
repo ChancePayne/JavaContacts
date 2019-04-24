@@ -2,6 +2,7 @@ package com.lambdaschool.javacontacts;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -39,18 +40,17 @@ public class ItemListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
 
-
-        CircularDictionary<Integer, String> data = new CircularDictionary<>(10);
+        /*CircularDictionary<Integer, String> data = new CircularDictionary<>(10);
 
         for(int i = 0; i < data.getLength() + 5; ++i) {
             data.put(i, Integer.toBinaryString(i));
         }
-        /*for(int i = 0; i < data.getLength() + 5; ++i) {
+        for(int i = 0; i < data.getLength() + 5; ++i) {
             System.out.println(data.get());
-        }*/
+        }
         System.out.println(data.get(1));
         System.out.println(data.get(14));
-        System.out.println(data.get(7));
+        System.out.println(data.get(7));*/
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
