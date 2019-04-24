@@ -1,4 +1,4 @@
-package com.lambdaschool.javacontacts;
+package com.jakeesveld.javacontacts;
 
 import org.junit.Test;
 

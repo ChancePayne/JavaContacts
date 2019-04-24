@@ -1,4 +1,4 @@
-package com.lambdaschool.javacontacts;
+package com.jakeesveld.javacontacts;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.lambdaschool.javacontacts.dummy.DummyContent;
+import com.jakeesveld.javacontacts.dummy.DummyContent;
 
 import java.util.List;
 
