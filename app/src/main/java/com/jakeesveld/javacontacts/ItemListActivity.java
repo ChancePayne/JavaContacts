@@ -2,6 +2,7 @@ package com.jakeesveld.javacontacts;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,10 +13,12 @@ import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jakeesveld.javacontacts.dummy.DummyContent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +36,8 @@ public class ItemListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,22 +84,26 @@ public class ItemListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane));
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, mTwoPane));
     }
 
     public static class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
+        public static final int CACHE_SIZE = 15;
         private final ItemListActivity mParentActivity;
-        private final List<DummyContent.DummyItem> mValues;
+        private final List<Contact> mValues;
         private final boolean mTwoPane;
+        private final CircularDictionary<String, Bitmap> imageCache;
+
+
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DummyContent.DummyItem item = (DummyContent.DummyItem) view.getTag();
+                Contact item = (Contact) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(ItemDetailFragment.ARG_ITEM_ID, item.id);
+                    arguments.putString(ItemDetailFragment.ARG_ITEM_ID, item.getName());
                     ItemDetailFragment fragment = new ItemDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -103,7 +112,7 @@ public class ItemListActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, ItemDetailActivity.class);
-                    intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, item.id);
+                    intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, item.getName());
 
                     context.startActivity(intent);
                 }
@@ -111,11 +120,27 @@ public class ItemListActivity extends AppCompatActivity {
         };
 
         SimpleItemRecyclerViewAdapter(ItemListActivity parent,
-                                      List<DummyContent.DummyItem> items,
                                       boolean twoPane) {
-            mValues = items;
+            mValues = new ArrayList<>();
+            getContacts();
+            imageCache = new CircularDictionary<>(CACHE_SIZE);
             mParentActivity = parent;
             mTwoPane = twoPane;
+        }
+        private void getContacts(){
+            ContactDao.getContacts(new ContactDao.ContactCallback() {
+                @Override
+                public void processContacts(List<Contact> contacts) {
+                    mValues.addAll(contacts);
+                    mParentActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifyDataSetChanged();
+                        }
+                    });
+
+                }
+            });
         }
 
         @Override
@@ -127,10 +152,30 @@ public class ItemListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            final Contact contact = mValues.get(position);
+            holder.mIdView.setText(contact.getName());
+            holder.mContentView.setText(contact.getPhone());
 
-            holder.itemView.setTag(mValues.get(position));
+            final Bitmap contactImage = imageCache.get(contact.getImageThumbnail());
+            if(contactImage == null){
+                holder.mImageView.setImageDrawable(mParentActivity.getDrawable(R.drawable.ic_launcher_background));
+                NetworkAdapter.backgroundBitmapFromUrl(contact.getImageThumbnail(), new NetworkAdapter.NetworkImageCallback() {
+                    @Override
+                    public void processImage(final Bitmap image) {
+                        imageCache.put(contact.getImageThumbnail(), image);
+                        mParentActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                holder.mImageView.setImageBitmap(image);
+                            }
+                        });
+                    }
+                });
+            }else{
+                holder.mImageView.setImageBitmap(contactImage);
+            }
+
+            holder.itemView.setTag(contact);
             holder.itemView.setOnClickListener(mOnClickListener);
         }
 
@@ -142,9 +187,11 @@ public class ItemListActivity extends AppCompatActivity {
         class ViewHolder extends RecyclerView.ViewHolder {
             final TextView mIdView;
             final TextView mContentView;
+            final ImageView mImageView;
 
             ViewHolder(View view) {
                 super(view);
+                mImageView = view.findViewById(R.id.image);
                 mIdView = (TextView) view.findViewById(R.id.id_text);
                 mContentView = (TextView) view.findViewById(R.id.content);
             }
