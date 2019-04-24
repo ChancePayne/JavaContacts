@@ -1,22 +1,7 @@
 package com.lambdaschool.javacontacts;
 
 public class Contact {
-    /*{
-        "name": {
-            "title":"mr",
-                "first":"سام",
-                "last":"محمدخان"
-        },
-        "email":"سام.محمدخان@example.com",
-            "phone":"094-59352278",
-            "picture":
 
-        {
-            "large":"https://randomuser.me/api/portraits/men/27.jpg",
-                "medium":"https://randomuser.me/api/portraits/med/men/27.jpg",
-                "thumbnail":"https://randomuser.me/api/portraits/thumb/men/27.jpg"
-        }
-    }*/
     private String title, first, last;
     private String email, phone;
     private String imageLarge, imageMedium, imageThumbnail;
