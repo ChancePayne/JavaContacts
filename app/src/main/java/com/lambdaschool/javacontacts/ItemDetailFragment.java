@@ -25,6 +25,7 @@ import com.lambdaschool.javacontacts.dummy.DummyContent;
  */
 public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
 
+//    S09M03-4c
     private GoogleMap mMap;
 
     /**
@@ -37,6 +38,7 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      */
     @Override
+//    S09M03-4b additional copied code
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
@@ -91,6 +93,7 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
             ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.details);
         }*/
 
+//        S09M03-4 copy code from generated maps activity into the activity where you want it to live
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);

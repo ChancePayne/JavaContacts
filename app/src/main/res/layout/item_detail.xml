@@ -15,6 +15,7 @@
         android:textIsSelectable="true"
         tools:context=".ItemDetailFragment" />
 
+    <!--S09M03-3 get map fragment from maps activity layout and move to where you want it, then adjust the layouts to fit how you want them to-->
     <fragment
         xmlns:map="http://schemas.android.com/apk/res-auto"
         android:id="@+id/map"

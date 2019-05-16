@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ContactDao {
 
-    private static final String CONTACTS_URL = "https://randomuser.me/api/?format=json&inc=name,email,phone,picture&results=1000";
+    private static final String CONTACTS_URL = "https://randomuser.me/api/?format=json&inc=name,email,phone,picture,location&results=1000";
 
     interface ContactCallback {
         void processContacts(List<Contact> contacts);
@@ -31,8 +31,48 @@ public class ContactDao {
                             String email = "", phone = "";
                             String large = "", medium = "", thumbnail = "";
 
-                            // parsing individual contact
 
+                            // location
+                            String street = "", city = "", state = "", postcode = "";
+                            double latitude = 0.0, longitude = 0.0;
+
+                            try {
+                                JSONObject location = json.getJSONObject("location");
+                                try {
+                                    street = location.getString("street");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                try {
+                                    city = location.getString("city");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                try {
+                                    state = location.getString("state");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                try {
+                                    postcode = location.getString("postcode");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                try {
+                                    latitude = location.getJSONObject("coordinates").getDouble("latitude");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                try {
+                                    longitude = location.getJSONObject("coordinates").getDouble("longitude");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            // parsing individual contact
                             try {
                                 title = json.getJSONObject("name").getString("title");
                             } catch (JSONException e) {
@@ -73,7 +113,8 @@ public class ContactDao {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            contacts.add(new Contact(title, first, last, email, phone, large, medium, thumbnail));
+
+                            contacts.add(new Contact(title, first, last, email, phone, large, medium, thumbnail, street, city, state, postcode, latitude, longitude));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
