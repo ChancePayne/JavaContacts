@@ -1,20 +1,29 @@
 package com.lambdaschool.javacontacts;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.lambdaschool.javacontacts.dummy.DummyContent;
 
 /**
@@ -25,8 +34,10 @@ import com.lambdaschool.javacontacts.dummy.DummyContent;
  */
 public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
 
-//    S09M03-4c
+    private static final int FINE_LOCATION_REQUEST_CODE = 5;
+    //    S09M03-4c
     private GoogleMap mMap;
+    private TextView textView;
 
     /**
      * Manipulates the map once available.
@@ -91,7 +102,8 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.getPhone());
+            textView = ((TextView) rootView.findViewById(R.id.item_detail));
+            textView.setText(mItem.getPhone());
         }
 
 //        S09M03-4 copy code from generated maps activity into the activity where you want it to live
@@ -100,6 +112,50 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        getCurrentLocation();
+
+
         return rootView;
+    }
+
+    private void getCurrentLocation() {
+        if(ContextCompat.checkSelfPermission(
+                getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+           != PackageManager.PERMISSION_GRANTED) {
+            // request the permission
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_REQUEST_CODE);
+        } else {
+            getLocation();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == FINE_LOCATION_REQUEST_CODE) {
+            if(permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLocation();
+            }
+        }
+    }
+
+    private void getLocation() {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        FusedLocationProviderClient locationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+        locationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                Location contactLocation = new Location("contact");
+
+                contactLocation.setLatitude(mItem.getLatitude());
+                contactLocation.setLongitude(mItem.getLongitude());
+
+                final float distance = location.distanceTo(contactLocation);
+
+                textView.setText((distance / 1000) + " Km away");
+            }
+        });
     }
 }
