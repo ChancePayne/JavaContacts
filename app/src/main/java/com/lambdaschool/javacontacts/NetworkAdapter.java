@@ -14,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -135,7 +136,6 @@ public class NetworkAdapter {
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setReadTimeout(3000);
                     connection.setConnectTimeout(3000);
-
                     connection.connect();
 
                     if(connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
@@ -144,6 +144,7 @@ public class NetworkAdapter {
                             result = BitmapFactory.decodeStream(stream);
                         }
                     }
+
                     callback.processImage(result);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();

@@ -21,6 +21,7 @@ import com.lambdaschool.javacontacts.dummy.DummyContent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An activity representing a list of Items. This activity
