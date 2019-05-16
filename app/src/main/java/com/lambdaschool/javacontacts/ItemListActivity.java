@@ -88,9 +88,10 @@ public class ItemListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Contact item = (Contact) view.getTag();
+//                S09M03-8 change this to pass a contact instead of a string
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(ItemDetailFragment.ARG_ITEM_ID, item.getName());
+                    arguments.putParcelable(ItemDetailFragment.ARG_ITEM_ID, item);
                     ItemDetailFragment fragment = new ItemDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -99,7 +100,7 @@ public class ItemListActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent  intent  = new Intent(context, ItemDetailActivity.class);
-                    intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, item.getName());
+                    intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, item);
 
                     context.startActivity(intent);
                 }
@@ -143,14 +144,14 @@ public class ItemListActivity extends AppCompatActivity {
             holder.mIdView.setText(contact.getName());
             holder.mContentView.setText(contact.getPhone());
 
-            final Bitmap contactImage = imageCache.get(contact.getImageThumbnail());
+            final Bitmap contactImage = imageCache.get(contact.getImageMedium());
             if(contactImage == null) {
                 // get image
                 holder.mImageView.setImageDrawable(mParentActivity.getDrawable(R.drawable.ic_launcher_background));
-                NetworkAdapter.backgroundBitmapFromUrl(contact.getImageThumbnail(), new NetworkAdapter.NetworkImageCallback() {
+                NetworkAdapter.backgroundBitmapFromUrl(contact.getImageMedium(), new NetworkAdapter.NetworkImageCallback() {
                     @Override
                     public void processImage(final Bitmap image) {
-                        imageCache.put(contact.getImageThumbnail(), image);
+                        imageCache.put(contact.getImageMedium(), image);
 
                         mParentActivity.runOnUiThread(new Runnable() {
                             @Override

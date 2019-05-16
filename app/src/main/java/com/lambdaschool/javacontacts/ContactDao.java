@@ -9,6 +9,7 @@ import java.util.List;
 
 public class ContactDao {
 
+//    S09M03-7 update path to return location data
     private static final String CONTACTS_URL = "https://randomuser.me/api/?format=json&inc=name,email,phone,picture,location&results=1000";
 
     interface ContactCallback {
@@ -31,7 +32,7 @@ public class ContactDao {
                             String email = "", phone = "";
                             String large = "", medium = "", thumbnail = "";
 
-
+//                            S09M03-6 get location fields from json
                             // location
                             String street = "", city = "", state = "", postcode = "";
                             double latitude = 0.0, longitude = 0.0;
